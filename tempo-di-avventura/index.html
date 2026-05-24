@@ -104,7 +104,7 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 		<div id="init-lacking"><p>Browser lacks capabilities required to play.</p><p>Upgrade or switch to another browser.</p></div>
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
-	<tw-storydata name="tempo di avventura" startnode="41" creator="Twine" creator-version="2.10.0" format="SugarCube" format-version="2.37.3" ifid="26f35d92-3761-4da9-a39f-e08d9fedbbda" options="" tags="" zoom="0.6" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css"></style><script role="script" id="twine-user-script" type="text/twine-javascript"></script><tw-passagedata pid="1" name="ChoosePlayer" tags="" position="625,825" size="100,100">Who are you?:
+	<tw-storydata name="tempo di avventura" startnode="41" creator="Twine" creator-version="2.10.0" format="SugarCube" format-version="2.37.3" ifid="26f35d92-3761-4da9-a39f-e08d9fedbbda" options="" tags="" zoom="0.6" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">#passages img{max-width:100%;height:auto;}</style><script role="script" id="twine-user-script" type="text/twine-javascript"></script><tw-passagedata pid="1" name="ChoosePlayer" tags="" position="625,825" size="100,100">Who are you?:
 &lt;&lt;link &quot;Io sono Sandro&quot;&gt;&gt;
   &lt;&lt;set $player = &quot;sandro&quot;&gt;&gt;
   &lt;&lt;set $opponent = &quot;claudia&quot;&gt;&gt;
@@ -133,7 +133,7 @@ setup.adventureData = [
   {choice: &quot;search&quot;, action: 1, interest: 1, self: 0, text1: &quot;go looking for anna&quot;},
   {choice: &quot;romance&quot;, action: -1, interest: -1, self: 2, text1: &quot;anna is gone&quot;},
   {choice: &quot;avoid&quot;, action: -1, interest: -2, self: 1, text1: &quot;shut down and look for something else to do&quot;},
-  {choice: &quot;search&quot;, action: 1, interest: 1, self: 0, text1: &quot;go looking for anna&quot;},
+  {choice: &quot;search&quot;, passage: &quot;search2&quot;, action: 1, interest: 1, self: 0, text1: &quot;go looking for anna&quot;},
   {choice: &quot;backtrack&quot;, action: 1, interest: 1, self: -1, text1: &quot;follow the path backwards&quot;},
   {choice: &quot;despair&quot;, action: -1, interest: -1, self: 1, text1: &quot;shut down&quot;},
   {choice: &quot;feign&quot;, action: -1, interest: -1, self: 1, text1: &quot;pretend to help&quot;},
@@ -177,12 +177,7 @@ setup.adventureData = [
 &lt;&lt;set $claudiaAction = 0&gt;&gt; 
 &lt;&lt;set $claudiaInterest = 0&gt;&gt; 
 &lt;&lt;set $claudiaSelf = 0&gt;&gt; 
-
-&lt;&lt;if $turn is undefined&gt;&gt; &lt;&lt;set $turn = &quot;sandro&quot;&gt;&gt; &lt;&lt;/if&gt;&gt;
-
-
-
-&lt;&lt;set $turn = $player&gt;&gt;</tw-passagedata><tw-passagedata pid="3" name="Start" tags="" position="375,350" size="100,100">&lt;&lt;nobr&gt;&gt;
+</tw-passagedata><tw-passagedata pid="3" name="Start" tags="" position="375,350" size="100,100">&lt;&lt;nobr&gt;&gt;
 &lt;&lt;if $turn is undefined&gt;&gt;
   &lt;&lt;set $turn = $player&gt;&gt;
 &lt;&lt;/if&gt;&gt;
@@ -205,21 +200,24 @@ setup.adventureData = [
 &lt;hr&gt;
 &lt;&lt;link _h[0].choice&gt;&gt;
   &lt;&lt;set $selectedIndex = 0&gt;&gt;
-  &lt;&lt;goto _h[0].choice&gt;&gt;
+  &lt;&lt;set _target = _h[0].passage || _h[0].choice&gt;&gt;
+  &lt;&lt;goto _target&gt;&gt;
 &lt;&lt;/link&gt;&gt;
 &lt;br&gt;
 &lt;i&gt;Description:&lt;/i&gt; &lt;&lt;print _h[0].text1&gt;&gt;
 &lt;hr&gt;
 &lt;&lt;link _h[1].choice&gt;&gt;
   &lt;&lt;set $selectedIndex = 1&gt;&gt;
-  &lt;&lt;goto _h[1].choice&gt;&gt;
+  &lt;&lt;set _target = _h[1].passage || _h[1].choice&gt;&gt;
+  &lt;&lt;goto _target&gt;&gt;
 &lt;&lt;/link&gt;&gt;
 &lt;br&gt;
 &lt;i&gt;Description:&lt;/i&gt; &lt;&lt;print _h[1].text1&gt;&gt;
 &lt;hr&gt;
 &lt;&lt;link _h[2].choice&gt;&gt;
   &lt;&lt;set $selectedIndex = 2&gt;&gt;
-  &lt;&lt;goto _h[2].choice&gt;&gt;
+  &lt;&lt;set _target = _h[2].passage || _h[2].choice&gt;&gt;
+  &lt;&lt;goto _target&gt;&gt;
 &lt;&lt;/link&gt;&gt;
 &lt;br&gt;
 &lt;i&gt;Description:&lt;/i&gt; &lt;&lt;print _h[2].text1&gt;&gt;
@@ -278,7 +276,22 @@ To find Anna, Claudia took this many actions: &lt;&lt;print $claudiaAction&gt;&g
 This much interest was developed: &lt;&lt;print $claudiaInterest&gt;&gt;&lt;br&gt;
 This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br&gt;
 
-[[Restart-&gt;Start]]
+&lt;&lt;link &quot;Restart&quot;&gt;&gt;
+  &lt;&lt;set $discard = []&gt;&gt;
+  &lt;&lt;set $deck = clone(setup.adventureData)&gt;&gt;
+  &lt;&lt;run $deck.sort(() =&gt; Math.random() - 0.5)&gt;&gt;
+  &lt;&lt;set $sandroHand = $deck.slice(0, 3)&gt;&gt;
+  &lt;&lt;set $claudiaHand = $deck.slice(3, 6)&gt;&gt;
+  &lt;&lt;set $remainingDeck = $deck.slice(6)&gt;&gt;
+  &lt;&lt;set $sandroAction = 0&gt;&gt;
+  &lt;&lt;set $sandroInterest = 0&gt;&gt;
+  &lt;&lt;set $sandroSelf = 0&gt;&gt;
+  &lt;&lt;set $claudiaAction = 0&gt;&gt;
+  &lt;&lt;set $claudiaInterest = 0&gt;&gt;
+  &lt;&lt;set $claudiaSelf = 0&gt;&gt;
+  &lt;&lt;set $turn = $player&gt;&gt;
+  &lt;&lt;goto &quot;Start&quot;&gt;&gt;
+&lt;&lt;/link&gt;&gt;
 </tw-passagedata><tw-passagedata pid="6" name="explore" tags="" position="725,75" size="100,100">&lt;&lt;nobr&gt;&gt;
 &lt;&lt;set _card = ($player == &quot;sandro&quot;) ? $sandroHand[$selectedIndex] : $claudiaHand[$selectedIndex]&gt;&gt;
 
@@ -299,12 +312,9 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
   &lt;&lt;set $claudiaSelf += _card.self&gt;&gt;
 &lt;&lt;/if&gt;&gt;
 
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-    &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
-  &lt;&lt;/if&gt;&gt;
 
 &lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/20explore-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/20explore-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;look around on the island for signs of Anna&lt;/i&gt;
@@ -337,21 +347,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -420,7 +420,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/21summon-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/21summon-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;call for the authorities to search&lt;/i&gt;
@@ -441,21 +441,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -524,7 +514,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/22gather-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/22gather-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;collect resources to help search&lt;/i&gt;
@@ -545,21 +535,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -630,7 +610,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/23walk-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/23walk-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;meander along the paths and explore the caves&lt;/i&gt;
@@ -651,21 +631,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -736,7 +706,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-  &lt;img src=&quot;images/24observe-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/24observe-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;watch the area but do not leave&lt;/i&gt;
@@ -757,21 +727,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -843,7 +803,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/25blame-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/25blame-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;p&gt;&lt;i&gt;accuse the &lt;&lt;print $opponentName&gt;&gt; of being responsible&lt;/i&gt;&lt;/p&gt;
@@ -864,21 +824,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -948,7 +898,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
- &lt;img src=&quot;images/26search-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+ &lt;img alt=&quot;&quot; src=&quot;images/26search-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;go looking for anna&lt;/i&gt;
@@ -969,21 +919,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -1055,7 +995,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-  &lt;img src=&quot;images/27romance-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/27romance-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;anna is gone&lt;/i&gt;
@@ -1076,21 +1016,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -1162,7 +1092,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-  &lt;img src=&quot;images/28avoid-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/28avoid-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;shut down and look for something else to do&lt;/i&gt;
@@ -1183,21 +1113,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -1236,7 +1156,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;else&gt;&gt;
   [[See Final Scoring-&gt;FinalScoring]]
 &lt;&lt;/if&gt;&gt;
-&lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="15" name="search" tags="" position="750,975" size="100,100">&lt;&lt;nobr&gt;&gt;
+&lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="15" name="search2" tags="" position="750,975" size="100,100">&lt;&lt;nobr&gt;&gt;
 &lt;&lt;set _card = ($player == &quot;sandro&quot;) ? $sandroHand[$selectedIndex] : $claudiaHand[$selectedIndex]&gt;&gt;
 
 &lt;&lt;set _hand = ($player == &quot;sandro&quot;) ? $sandroHand : $claudiaHand&gt;&gt;
@@ -1267,7 +1187,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
- &lt;img src=&quot;images/29search-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+ &lt;img alt=&quot;&quot; src=&quot;images/29search-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;go looking for anna&lt;/i&gt;
@@ -1288,21 +1208,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -1373,7 +1283,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
- &lt;img src=&quot;images/30backtrack-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+ &lt;img alt=&quot;&quot; src=&quot;images/30backtrack-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;follow the path backwards&lt;/i&gt;
@@ -1394,21 +1304,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -1480,7 +1380,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/31despair-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/31despair-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;shut down&lt;/i&gt;
@@ -1501,21 +1401,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -1587,7 +1477,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
- &lt;img src=&quot;images/32feign-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+ &lt;img alt=&quot;&quot; src=&quot;images/32feign-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;pretend to help&lt;/i&gt;
@@ -1608,21 +1498,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -1693,7 +1573,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-  &lt;img src=&quot;images/33quit-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/33quit-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;be done with all of this&lt;/i&gt;
@@ -1714,21 +1594,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -1798,7 +1668,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/34wait-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/34wait-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;stop&lt;/i&gt;
@@ -1819,21 +1689,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -1904,7 +1764,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
- &lt;img src=&quot;images/35kiss-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+ &lt;img alt=&quot;&quot; src=&quot;images/35kiss-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;make a romantic advance to your partner&lt;/i&gt;
@@ -1925,21 +1785,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -2009,7 +1859,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/36lie-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/36lie-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;make up some fiction for why you cannot help&lt;/i&gt;
@@ -2030,21 +1880,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -2115,7 +1955,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/37escape-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/37escape-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;just leave&lt;/i&gt;
@@ -2136,21 +1976,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -2221,7 +2051,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/38reject-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/38reject-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;it is not your fault&lt;/i&gt;
@@ -2242,21 +2072,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -2295,7 +2115,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;else&gt;&gt;
   [[See Final Scoring-&gt;FinalScoring]]
 &lt;&lt;/if&gt;&gt;
-&lt;&lt;nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="25" name="yield" tags="" position="925,975" size="100,100">&lt;&lt;nobr&gt;&gt;
+&lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="25" name="yield" tags="" position="925,975" size="100,100">&lt;&lt;nobr&gt;&gt;
 &lt;&lt;set _card = ($player == &quot;sandro&quot;) ? $sandroHand[$selectedIndex] : $claudiaHand[$selectedIndex]&gt;&gt;
 
 &lt;&lt;set _hand = ($player == &quot;sandro&quot;) ? $sandroHand : $claudiaHand&gt;&gt;
@@ -2326,7 +2146,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/39yield-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/39yield-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;give in&lt;/i&gt;
@@ -2347,21 +2167,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -2431,7 +2241,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
- &lt;img src=&quot;images/40pretend-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+ &lt;img alt=&quot;&quot; src=&quot;images/40pretend-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;play along&lt;/i&gt;
@@ -2452,21 +2262,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -2535,7 +2335,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/41confront-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/41confront-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;the &lt;&lt;print $opponentName&gt;&gt; must face the consequenses &lt;/i&gt;
@@ -2556,21 +2356,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -2639,7 +2429,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
- &lt;img src=&quot;images/42comfort-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+ &lt;img alt=&quot;&quot; src=&quot;images/42comfort-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;approach and be kind&lt;/i&gt;
@@ -2660,21 +2450,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -2744,7 +2524,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/43withdraw-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/43withdraw-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;step back from the situation&lt;/i&gt;
@@ -2765,21 +2545,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -2849,7 +2619,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
- &lt;img src=&quot;images/44neglect-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+ &lt;img alt=&quot;&quot; src=&quot;images/44neglect-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;maybe have a nice lunch&lt;/i&gt;
@@ -2870,21 +2640,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -2953,7 +2713,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
- &lt;img src=&quot;images/45travel-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+ &lt;img alt=&quot;&quot; src=&quot;images/45travel-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;leave and go somewhere interesting&lt;/i&gt;
@@ -2974,21 +2734,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -3057,7 +2807,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-  &lt;img src=&quot;images/46forget-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/46forget-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;just let go of the memories and blame&lt;/i&gt;
@@ -3078,21 +2828,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -3161,7 +2901,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
- &lt;img src=&quot;images/47spy-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+ &lt;img alt=&quot;&quot; src=&quot;images/47spy-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;watch and follow&lt;/i&gt;
@@ -3182,21 +2922,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -3266,7 +2996,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/48succumb2-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/48succumb2-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;let it wash over you guilt and all&lt;/i&gt;
@@ -3287,21 +3017,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -3371,7 +3091,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/49endure-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/49endure-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;just keep going&lt;/i&gt;
@@ -3392,21 +3112,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -3476,7 +3186,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-  &lt;img src=&quot;images/50father-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/50father-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;contact annas rich father&lt;/i&gt;
@@ -3497,21 +3207,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -3581,7 +3281,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/51smugglers-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/51smugglers-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;find and interview the smugglers&lt;/i&gt;
@@ -3602,21 +3302,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -3685,7 +3375,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/52mainland-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/52mainland-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;visit the police on the mainland&lt;/i&gt;
@@ -3706,21 +3396,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -3789,7 +3469,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/53newspaper-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/53newspaper-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;talk about annas name in the paper as missing&lt;/i&gt;
@@ -3810,21 +3490,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -3894,7 +3564,7 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-&lt;img src=&quot;images/54meet-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/54meet-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;/div&gt;
 
 &lt;i&gt;meet on the train&lt;/i&gt;
@@ -3915,21 +3585,11 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;set $selectedCard = clone(_equivalent.random())&gt;&gt;
 &lt;&lt;set _indexToRemove = -1&gt;&gt;
 &lt;&lt;for _i to 0; _i lt _opHand.length; _i++&gt;&gt;
-  &lt;&lt;if _opHand[_i].choice == $selectedCard.choice&gt;&gt;
+  &lt;&lt;if (_opHand[_i].passage || _opHand[_i].choice) == ($selectedCard.passage || $selectedCard.choice)&gt;&gt;
     &lt;&lt;set _indexToRemove = _i&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/for&gt;&gt;
 &lt;&lt;if _indexToRemove != -1&gt;&gt; &lt;&lt;run _opHand.splice(_indexToRemove, 1)&gt;&gt; &lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;sandro&quot;&gt;&gt;
-&lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-&lt;&lt;if $player == &quot;claudia&quot;&gt;&gt;
-&lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
-&lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
-&lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
-&lt;&lt;/if&gt;&gt;
 &lt;&lt;run $discard.push($selectedCard)&gt;&gt;
 
 &lt;&lt;if $opponent == &quot;sandro&quot;&gt;&gt;
@@ -3968,31 +3628,31 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
   [[See Final Scoring-&gt;FinalScoring]]
 &lt;&lt;/if&gt;&gt;
 &lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="41" name="credits1" tags="" position="125,675" size="100,100">&lt;&lt;nobr&gt;&gt; &lt;&lt;audio &quot;fusco&quot; play&gt;&gt;
-&lt;img src=&quot;images/01criterion-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;img alt=&quot;&quot; src=&quot;images/01criterion-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits2&gt;&gt;&lt;&lt;/timed&gt;&gt;
 &lt;&lt;/nobr&gt;&gt;
 
 
-</tw-passagedata><tw-passagedata pid="42" name="credits2" tags="" position="275,675" size="100,100">&lt;img src=&quot;images/02janus-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+</tw-passagedata><tw-passagedata pid="42" name="credits2" tags="" position="275,675" size="100,100">&lt;img alt=&quot;&quot; src=&quot;images/02janus-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 
-&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits3&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="43" name="credits3" tags="" position="425,675" size="100,100">&lt;img src=&quot;images/03antonioni-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
-&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits4&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="44" name="credits4" tags="" position="125,825" size="100,100">&lt;img src=&quot;images/04lavventura-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
-&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits5&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="45" name="credits5" tags="" position="225,825" size="100,100">&lt;img src=&quot;images/05tempo-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
-&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits6&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="46" name="credits6" tags="" position="325,825" size="100,100">&lt;img src=&quot;images/10anna-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits3&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="43" name="credits3" tags="" position="425,675" size="100,100">&lt;img alt=&quot;&quot; src=&quot;images/03antonioni-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits4&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="44" name="credits4" tags="" position="125,825" size="100,100">&lt;img alt=&quot;&quot; src=&quot;images/04lavventura-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits5&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="45" name="credits5" tags="" position="225,825" size="100,100">&lt;img alt=&quot;&quot; src=&quot;images/05tempo-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits6&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="46" name="credits6" tags="" position="325,825" size="100,100">&lt;img alt=&quot;&quot; src=&quot;images/10anna-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 ciao Anna
-&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits7&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="47" name="credits7" tags="" position="425,825" size="100,100">&lt;img src=&quot;images/11claudia-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits7&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="47" name="credits7" tags="" position="425,825" size="100,100">&lt;img alt=&quot;&quot; src=&quot;images/11claudia-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 are you Claudia?
-&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits8&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="48" name="credits8" tags="" position="525,825" size="100,100">&lt;img src=&quot;images/12sandro-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits8&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="48" name="credits8" tags="" position="525,825" size="100,100">&lt;img alt=&quot;&quot; src=&quot;images/12sandro-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 or are you Sandro?
-&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto ChoosePlayer&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="49" name="intro" tags="" position="125,950" size="100,100">&lt;img src=&quot;images/13richfriends-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto ChoosePlayer&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="49" name="intro" tags="" position="125,950" size="100,100">&lt;img alt=&quot;&quot; src=&quot;images/13richfriends-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;&lt;print $playerName&gt;&gt; you have rich friends because you are rich
-&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto intro2&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="50" name="intro2" tags="" position="250,950" size="100,100">&lt;img src=&quot;images/14yacht-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto intro2&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="50" name="intro2" tags="" position="250,950" size="100,100">&lt;img alt=&quot;&quot; src=&quot;images/14yacht-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 you enjoy going to the islands on a yacht
-&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto intro3&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="51" name="intro3" tags="" position="375,950" size="100,100">&lt;img src=&quot;images/15sadness-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto intro3&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="51" name="intro3" tags="" position="375,950" size="100,100">&lt;img alt=&quot;&quot; src=&quot;images/15sadness-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 but poor Anna gets so very sad about being wealthy
-&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto intro4&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="52" name="intro4" tags="" position="500,950" size="100,100">&lt;img src=&quot;images/16disconnect-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto intro4&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="52" name="intro4" tags="" position="500,950" size="100,100">&lt;img alt=&quot;&quot; src=&quot;images/16disconnect-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 she loses her connection to her reality
-&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto intro5&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="53" name="intro5" tags="" position="625,950" size="100,100">&lt;img src=&quot;images/17missing-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto intro5&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="53" name="intro5" tags="" position="625,950" size="100,100">&lt;img alt=&quot;&quot; src=&quot;images/17missing-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 Where is Anna?
 &lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto Start&gt;&gt;&lt;&lt;/timed&gt;&gt;</tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">
