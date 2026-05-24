@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Adventure with Deck 15</title>
+</head>
+<body>
+<tw-storydata creator="Twine" creator-version="2.3.14" format="SugarCube" format-version="2.34.1" hidden="" ifid="ADVENTURE-CHOICES-005" name="AdventureDeckChoices15" options="" startnode="100">
+<style id="twine-user-stylesheet" role="stylesheet" type="text/tine-css"></style>
+<script id="twine-user-script" role="script" type="text/twine-javascript"></script>
+
+<tw-passagedata name="StoryInit" pid="1" position="100,100" size="100,100">
+&lt;&lt;script&gt;&gt;
+setup.adventureData = [
+  {choice: 'explore', action: 1, interest: 1, self: -1, text1: "look around on the island for signs of Anna"},
+  {choice: 'summon', action: 1, interest: 1, self: -1, text1: "call for the authorities to search"},
+  {choice: 'gather', action: 2, interest: 1, self: -1, text1: "collect resources to help search"},
+  {choice: 'walk', action: 1, interest: 0, self: -1, text1: "meander along the paths and explore the caves"},
+  {choice: 'observe', action: 0, interest: 0, self: -1, text1: "watch the area but do not leave"},
+  {choice: 'blame', action: 0, interest: -1, self: 1, text1: "accuse the other player of being responsible"},
+  {choice: 'search', action: 1, interest: 1, self: 0, text1: "go looking for anna"},
+  {choice: 'romance', action: -1, interest: -1, self: 2, text1: "anna is gone, we must live on"},
+  {choice: 'avoid', action: -1, interest: -2, self: 1, text1: "shut down and look for something else to do"},
+  {choice: 'backtrack', action: 1, interest: 1, self: -1, text1: "follow the path backwards"},
+  {choice: 'despair', action: -1, interest: -1, self: 1, text1: "shut down, be depressed, lament the loss"},
+  {choice: 'feign', action: -1, interest: -1, self: 1, text1: "pretend to help, but do not"},
+  {choice: 'quit', action: 0, interest: 0, self: 1, text1: "be done with all of this"},
+  {choice: 'wait', action: 0, interest: 0, self: 0, text1: "stop, and do nothing"},
+  {choice: 'kiss', action: 0, interest: 0, self: 1, text1: "make a romantic advance to your partner"},
+  {choice: 'lie', action: 0, interest: 0, self: 1, text1: "make up some fiction for why you cannot help"},
+  {choice: 'escape', action: 1, interest: 1, self: 1, text1: "just leave"},
+  {choice: 'reject', action: 0, interest: 1, self: 1, text1: "it is not your fault, accept no blame"},
+  {choice: 'yield', action: 0, interest: 0, self: 1, text1: "give in"},
+  {choice: 'pretend', action: 0, interest: 1, self: 1, text1: "play along"},
+  {choice: 'confront', action: 0, interest: 0, self: 1, text1: "the other player must face the consequenses "},
+  {choice: 'comfort', action: 0, interest: 0, self: 0, text1: "approach and be kind"},
+  {choice: 'withdraw', action: 0, interest: 0, self: 1, text1: "step back from the situation"},
+  {choice: 'neglect', action: 0, interest: 0, self: 1, text1: "maybe have a nice lunch"},
+  {choice: 'travel', action: 1, interest: 1, self: 0, text1: "leave and go somewhere interesting"},
+  {choice: 'forget', action: 0, interest: -1, self: 1, text1: "just let go of the memories and blame"},
+  {choice: 'spy', action: 1, interest: 1, self: 0, text1: "watch and follow"},
+  {choice: 'succumb', action: 0, interest: 0, self: -1, text1: "let it wash over you guilt and all"},
+  {choice: 'endure', action: 1, interest: -1, self: 1, text1: "just keep going"},
+];
+&lt;&lt;/script&gt;&gt;
+
+&lt;&lt;set $deck = clone(setup.adventureData)&gt;&gt;
+&lt;&lt;run $deck.sort(() =&gt; Math.random() - 0.5)&gt;&gt;
+&lt;&lt;set $sandroHand = $deck.slice(0, 3)&gt;&gt;
+&lt;&lt;set $claudiaHand = $deck.slice(3, 6)&gt;&gt;
+&lt;&lt;set $remainingDeck = $deck.slice(6)&gt;&gt;
+
+&lt;&lt;set $sandroAction = 0&gt;&gt;
+&lt;&lt;set $sandroInterest = 0&gt;&gt;
+&lt;&lt;set $sandroSelf = 0&gt;&gt;
+&lt;&lt;set $claudiaAction = 0&gt;&gt;
+&lt;&lt;set $claudiaInterest = 0&gt;&gt;
+&lt;&lt;set $claudiaSelf = 0&gt;&gt;
+&lt;&lt;set $discard = []&gt;&gt;
+</tw-passagedata>
+
+<tw-passagedata name="Start" pid="100" position="300,100" size="100,100">
+Choose your character:
+
+[[Play as Sandro-&gt;PlayTurn][$player = "sandro"]]
+[[Play as Claudia-&gt;PlayTurn][$player = "claudia"]]
+</tw-passagedata>
+
+<tw-passagedata name="PlayTurn" pid="101" position="300,200" size="100,100">
+&lt;&lt;set $turn = $player&gt;&gt;
+&lt;&lt;goto "Game"&gt;&gt;
+</tw-passagedata>
+
+<tw-passagedata name="Game" pid="102" position="300,300" size="100,100">
+&lt;&lt;if $remainingDeck.length == 0&gt;&gt;
+  &lt;&lt;goto "FinalScoring"&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;&lt;set _hand = ($turn == "sandro") ? $sandroHand : $claudiaHand&gt;&gt;
+
+&lt;&lt;if $turn == $player&gt;&gt;
+  It is your turn. Choose a card:
+  &lt;&lt;for _i to 0; _i &lt; _hand.length; _i++&gt;&gt;
+    &lt;hr&gt;
+    &lt;&lt;link _hand[_i].choice&gt;&gt;
+      &lt;&lt;set $selectedCard = clone(_hand[_i])&gt;&gt;
+      &lt;&lt;goto "ResolveCard"&gt;&gt;
+    &lt;&lt;/link&gt;&gt;&lt;br&gt;
+    &lt;i&gt;Description:&lt;/i&gt; &lt;&lt;print _hand[_i].text1&gt;&gt;
+  &lt;&lt;/for&gt;&gt;
+&lt;&lt;else&gt;&gt;
+  The AI is playing for &lt;&lt;print $turn&gt;&gt;...
+  &lt;&lt;set _best = _hand[0]&gt;&gt;
+  &lt;&lt;for _i to 1; _i &lt; _hand.length; _i++&gt;&gt;
+    &lt;&lt;if _hand[_i].self &gt; _best.self&gt;&gt;
+      &lt;&lt;set _best = _hand[_i]&gt;&gt;
+    &lt;&lt;/if&gt;&gt;
+  &lt;&lt;/for&gt;&gt;
+  &lt;&lt;set $selectedCard = clone(_best)&gt;&gt;
+  &lt;&lt;goto "ResolveCard"&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+</tw-passagedata>
+
+<tw-passagedata name="ResolveCard" pid="103" position="300,400" size="100,100">
+&lt;&lt;set _hand = ($turn == "sandro") ? $sandroHand : $claudiaHand&gt;&gt;
+&lt;&lt;run _hand.delete(_hand.findIndex(x =&gt; x.choice == $selectedCard.choice))&gt;&gt;
+&lt;&lt;set $discard.push($selectedCard)&gt;&gt;
+
+You selected:
+&lt;b&gt;Card:&lt;/b&gt; &lt;&lt;print $selectedCard.choice&gt;&gt;&lt;br&gt;
+&lt;b&gt;Action:&lt;/b&gt; &lt;&lt;print $selectedCard.action&gt;&gt;&lt;br&gt;
+&lt;b&gt;Interest:&lt;/b&gt; &lt;&lt;print $selectedCard.interest&gt;&gt;&lt;br&gt;
+&lt;b&gt;Self:&lt;/b&gt; &lt;&lt;print $selectedCard.self&gt;&gt;&lt;br&gt;
+&lt;i&gt;Description:&lt;/i&gt; &lt;&lt;print $selectedCard.text1&gt;&gt;&lt;br&gt;
+
+&lt;&lt;if $turn == "sandro"&gt;&gt;
+  &lt;&lt;set $sandroAction += $selectedCard.action&gt;&gt;
+  &lt;&lt;set $sandroInterest += $selectedCard.interest&gt;&gt;
+  &lt;&lt;set $sandroSelf += $selectedCard.self&gt;&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;&lt;set $claudiaAction += $selectedCard.action&gt;&gt;
+  &lt;&lt;set $claudiaInterest += $selectedCard.interest&gt;&gt;
+  &lt;&lt;set $claudiaSelf += $selectedCard.self&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;&lt;if $remainingDeck.length &gt; 0&gt;&gt;
+  &lt;&lt;set _drawn = $remainingDeck.shift()&gt;&gt;
+  &lt;&lt;run _hand.push(_drawn)&gt;&gt;
+  &lt;&lt;set $turn = ($turn == "sandro") ? "claudia" : "sandro"&gt;&gt;
+  [[Continue-&gt;Game]]
+&lt;&lt;else&gt;&gt;
+  &lt;&lt;goto "FinalScoring"&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+</tw-passagedata>
+
+<tw-passagedata name="FinalScoring" pid="104" position="300,500" size="100,100">
+&lt;h2&gt;Final Scoring&lt;/h2&gt;
+&lt;b&gt;Sandro&lt;/b&gt;&lt;br&gt;
+- Action: &lt;&lt;print $sandroAction&gt;&gt;&lt;br&gt;
+- Interest: &lt;&lt;print $sandroInterest&gt;&gt;&lt;br&gt;
+- Self: &lt;&lt;print $sandroSelf&gt;&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;Claudia&lt;/b&gt;&lt;br&gt;
+- Action: &lt;&lt;print $claudiaAction&gt;&gt;&lt;br&gt;
+- Interest: &lt;&lt;print $claudiaInterest&gt;&gt;&lt;br&gt;
+- Self: &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br&gt;
+
+[[Restart-&gt;Start]]
+</tw-passagedata>
+
+</tw-storydata>
+</body>
+</html>
