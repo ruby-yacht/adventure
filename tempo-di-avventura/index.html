@@ -297,14 +297,12 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
   &lt;&lt;set $turn = $player&gt;&gt;
   &lt;&lt;goto &quot;Start&quot;&gt;&gt;
 &lt;&lt;/link&gt;&gt;
-</tw-passagedata><tw-passagedata pid="54" name="PlayCard" tags="" position="1550,350" size="100,100">/%
-  Shared card-turn engine.
+</tw-passagedata><tw-passagedata pid="54" name="PlayCardStart" tags="" position="1550,350" size="100,100">/%
+  Shared card-turn setup.
 
-  Most hand edits should happen in two places:
-  1. StoryInit: edit card names, scoring, and descriptions in setup.adventureData.
-  2. The small card passages below: edit _image if a card should use a new image.
-
-  Each card passage sets _image, then includes this passage.
+  Card passages include this first, then show their own static image tag,
+  then include PlayCardFinish. Keeping the image tag static makes the story
+  easier to hand-edit and avoids browser/Twine issues with dynamic image src.
 %/
 &lt;&lt;nobr&gt;&gt;
 /% Find the selected card in the human player's hand. %/
@@ -338,14 +336,10 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
     &lt;&lt;run $claudiaHand.push(_drawnCard)&gt;&gt;
   &lt;&lt;/if&gt;&gt;
 &lt;&lt;/if&gt;&gt;
-&lt;&lt;/nobr&gt;&gt;
-
-&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
-  &lt;img alt=&quot;&quot; src=&quot;&lt;&lt;print _image&gt;&gt;&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
-&lt;/div&gt;
-
-&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
-
+&lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="55" name="PlayCardFinish" tags="" position="1550,475" size="100,100">/%
+  Shared opponent turn and ending logic.
+  Card passages include this after their static image/caption block.
+%/
 &lt;&lt;nobr&gt;&gt;
 /% Opponent AI: choose randomly among the cards with the highest self score. %/
 &lt;&lt;set $turn = ($turn == &quot;sandro&quot;) ? &quot;claudia&quot; : &quot;sandro&quot;&gt;&gt;
@@ -407,113 +401,358 @@ This is how much it was about Claudia:  &lt;&lt;print $claudiaSelf&gt;&gt;&lt;br
 &lt;&lt;else&gt;&gt;
   [[See Final Scoring-&gt;FinalScoring]]
 &lt;&lt;/if&gt;&gt;
-&lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="6" name="explore" tags="" position="725,75" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/20explore-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="7" name="summon" tags="" position="725,175" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/21summon-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="8" name="gather" tags="" position="725,275" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/22gather-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="9" name="walk" tags="" position="725,375" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/23walk-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="10" name="observe" tags="" position="725,475" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/24observe-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="11" name="blame" tags="" position="725,575" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/25blame-gb.png&quot;&gt;&gt;
+&lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="6" name="explore" tags="" position="725,75" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/20explore-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="7" name="summon" tags="" position="725,175" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/21summon-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="8" name="gather" tags="" position="725,275" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/22gather-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="9" name="walk" tags="" position="725,375" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/23walk-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="10" name="observe" tags="" position="725,475" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/24observe-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="11" name="blame" tags="" position="725,575" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
 &lt;&lt;set _caption = &quot;accuse &quot; + $opponentName + &quot; of being responsible&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="12" name="search" tags="" position="750,675" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/26search-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="13" name="romance" tags="" position="750,775" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/27romance-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="14" name="avoid" tags="" position="750,875" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/28avoid-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="15" name="search2" tags="" position="750,975" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/29search-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="16" name="backtrack" tags="" position="925,75" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/30backtrack-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="17" name="despair" tags="" position="925,175" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/31despair-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="18" name="feign" tags="" position="925,275" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/32feign-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="19" name="quit" tags="" position="925,375" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/33quit-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="20" name="wait" tags="" position="925,475" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/34wait-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="21" name="kiss" tags="" position="925,575" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/35kiss-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="22" name="lie" tags="" position="925,675" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/36lie-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="23" name="escape" tags="" position="925,775" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/37escape-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="24" name="reject" tags="" position="925,875" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/38reject-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="25" name="yield" tags="" position="925,975" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/39yield-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="26" name="pretend" tags="" position="1050,75" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/40pretend-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="27" name="confront" tags="" position="1050,175" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/41confront-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="28" name="comfort" tags="" position="1050,275" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/42comfort-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="29" name="withdraw" tags="" position="1050,375" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/43withdraw-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="30" name="neglect" tags="" position="1050,475" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/44neglect-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="31" name="travel" tags="" position="1050,575" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/45travel-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="32" name="forget" tags="" position="1050,675" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/46forget-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="33" name="spy" tags="" position="1050,775" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/47spy-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="34" name="succumb" tags="" position="1050,875" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/48succumb2-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="35" name="endure" tags="" position="1050,975" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/49endure-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="36" name="father" tags="" position="1200,500" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/50father-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="37" name="smugglers" tags="" position="1200,600" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/51smugglers-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="38" name="mainland" tags="" position="1200,700" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/52mainland-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="39" name="newspaper" tags="" position="1200,800" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/53newspaper-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="40" name="meet" tags="" position="1200,925" size="100,100">/% This card passage is intentionally tiny for hand editing.
-   Change _image to swap the card art; edit scoring/text in StoryInit. %/
-&lt;&lt;set _image = &quot;images/54meet-gb.png&quot;&gt;&gt;
-&lt;&lt;include &quot;PlayCard&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="41" name="credits1" tags="" position="125,675" size="100,100">&lt;&lt;nobr&gt;&gt; &lt;&lt;audio &quot;fusco&quot; play&gt;&gt;
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/25blame-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="12" name="search" tags="" position="750,675" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/26search-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="13" name="romance" tags="" position="750,775" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/27romance-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="14" name="avoid" tags="" position="750,875" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/28avoid-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="15" name="search2" tags="" position="750,975" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/29search-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="16" name="backtrack" tags="" position="925,75" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/30backtrack-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="17" name="despair" tags="" position="925,175" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/31despair-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="18" name="feign" tags="" position="925,275" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/32feign-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="19" name="quit" tags="" position="925,375" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/33quit-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="20" name="wait" tags="" position="925,475" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/34wait-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="21" name="kiss" tags="" position="925,575" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/35kiss-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="22" name="lie" tags="" position="925,675" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/36lie-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="23" name="escape" tags="" position="925,775" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/37escape-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="24" name="reject" tags="" position="925,875" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/38reject-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="25" name="yield" tags="" position="925,975" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/39yield-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="26" name="pretend" tags="" position="1050,75" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/40pretend-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="27" name="confront" tags="" position="1050,175" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/41confront-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="28" name="comfort" tags="" position="1050,275" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/42comfort-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="29" name="withdraw" tags="" position="1050,375" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/43withdraw-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="30" name="neglect" tags="" position="1050,475" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/44neglect-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="31" name="travel" tags="" position="1050,575" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/45travel-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="32" name="forget" tags="" position="1050,675" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/46forget-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="33" name="spy" tags="" position="1050,775" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/47spy-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="34" name="succumb" tags="" position="1050,875" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/48succumb2-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="35" name="endure" tags="" position="1050,975" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/49endure-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="36" name="father" tags="" position="1200,500" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/50father-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="37" name="smugglers" tags="" position="1200,600" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/51smugglers-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="38" name="mainland" tags="" position="1200,700" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/52mainland-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="39" name="newspaper" tags="" position="1200,800" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/53newspaper-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="40" name="meet" tags="" position="1200,925" size="100,100">/% This card passage is intentionally small for hand editing.
+   Change the img src below to swap the card art; edit scoring/text in StoryInit. %/
+&lt;&lt;include &quot;PlayCardStart&quot;&gt;&gt;
+
+&lt;div style=&quot;text-align:center; margin:20px;&quot;&gt;
+  &lt;img alt=&quot;&quot; src=&quot;images/54meet-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
+&lt;/div&gt;
+
+&lt;i&gt;&lt;&lt;print _caption&gt;&gt;&lt;/i&gt;
+
+&lt;&lt;include &quot;PlayCardFinish&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="41" name="credits1" tags="" position="125,675" size="100,100">&lt;&lt;nobr&gt;&gt; &lt;&lt;audio &quot;fusco&quot; play&gt;&gt;
 &lt;img alt=&quot;&quot; src=&quot;images/01criterion-gb.png&quot; height=&quot;340&quot; width=&quot;638&quot;&gt;
 &lt;&lt;timed 5s&gt;&gt;&lt;&lt;goto credits2&gt;&gt;&lt;&lt;/timed&gt;&gt;
 &lt;&lt;/nobr&gt;&gt;
